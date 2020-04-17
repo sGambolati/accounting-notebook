@@ -6,3 +6,5 @@ class Transaction {
         this.effectiveDate = new Date();
     }
 }
+
+module.exports = Transaction;
