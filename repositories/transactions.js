@@ -1,4 +1,3 @@
-const transactionModel = require('../models/transaction');
 let transactions = [];
 
 class TransactionRepository {
@@ -7,11 +6,7 @@ class TransactionRepository {
     }
 
     insert(transaction) {
-        
-
         transactions.push(transaction);
-
-        return transaction;
     }
 }
 
