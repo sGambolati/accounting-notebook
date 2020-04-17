@@ -12,7 +12,7 @@ router.get(API_ROUTE, (req, res) => {
         const result = repository.getAll();
         res.status(200).send(result);
     } catch (err) {
-        res.status(400).send(`Error: ${err.message}`);
+        res.status(400).send({error: err.message});
     }
 });
 
@@ -29,7 +29,7 @@ router.post(API_ROUTE, (req, res) => {
 
 		res.status(200).send(transaction);
     } catch (err) {
-        res.status(400).send(`Error: ${err.message}`);
+        res.status(400).send({error: err.message});
     }
 });
 
