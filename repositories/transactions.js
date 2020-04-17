@@ -7,6 +7,8 @@ class TransactionRepository {
     }
 
     insert(transaction) {
+        
+
         transactions.push(transaction);
 
         return transaction;
