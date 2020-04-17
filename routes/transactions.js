@@ -1,11 +1,13 @@
 const express = require('express');
 const TransactionRepository = require('../repositories/transactions');
-const Transaction = require('../models/transaction');
+const AccountRepository = require('../repositories/accounts');
+const { Transaction } = require('../models/transaction');
 const router = express.Router();
 
 const API_ROUTE = "/api/transactions"
 
 const repository = new TransactionRepository();
+const accountRepository = new AccountRepository();
 
 router.get(API_ROUTE, (req, res) => {
     try {
@@ -19,12 +21,22 @@ router.get(API_ROUTE, (req, res) => {
 router.post(API_ROUTE, (req, res) => {
     try {
 		const type = req.body.type;
-		const amount = req.body.amount;
+		const amount = parseFloat(req.body.amount);
 
 		const transaction = new Transaction(type, amount);
+		const account = accountRepository.get();
+
 		if (transaction.isValid()) {
-			// Need to check if User amount is less than 0.
-			repository.insert(transaction);
+			// Lock.
+
+			if (account && account.canProcess(transaction.type, transaction.amount)) {
+				repository.insert(transaction);
+				account.updateBalanceAmount(transaction.type, transaction.amount);
+			} else {
+				throw new Error("Can't process transaction.");
+			}
+
+			// Release Lock.
 		}
 
 		res.status(200).send(transaction);
