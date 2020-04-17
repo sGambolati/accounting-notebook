@@ -25,4 +25,4 @@ const TransactionTypes = {
     DEBIT: 'debit'
 }
 
-module.exports = Transaction;
+module.exports = { Transaction, TransactionTypes };
