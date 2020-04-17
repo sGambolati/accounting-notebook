@@ -1,11 +1,15 @@
+const transactionModel = require('../models/transaction');
+let transactions = [];
 
 class TransactionRepository {
     getAll() {
-        return true;
+        return transactions;
     }
 
-    insert() {
+    insert(transaction) {
+        transactions.push(transaction);
 
+        return transaction;
     }
 }
 
