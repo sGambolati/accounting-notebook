@@ -3,7 +3,8 @@ const { TransactionTypes } = require('./transaction');
 class Account {
     constructor() {
         this.name = 'John Doe';
-        this.balanceAmount = 0.0;
+		this.balanceAmount = 0.0;
+		this.isUpdating = false;
     }
 
     canProcess(type, amount) {
@@ -35,7 +36,19 @@ class Account {
 			const signedAmount = this.getTransactionAmount(type, amount);
 			this.balanceAmount += signedAmount;
 		}
-	}
+    }
+    
+    lock() {
+        this.isUpdating = true;
+    }
+
+    unlock() {
+        this.isUpdating = false;
+    }
+
+    isLocked() {
+        return this.isUpdating;
+    }
 }
 
 module.exports = Account;

@@ -14,19 +14,39 @@ class TransactionService {
     async insert(transaction) {
 		const account = this.accountRepository.get();
 
-		if (transaction.isValid()) {
-			// Lock.
-
+		if (transaction.isValid()) {		
 			if (account && account.canProcess(transaction.type, transaction.amount)) {
-				this.repository.insert(transaction);
-				account.updateBalanceAmount(transaction.type, transaction.amount);
+
+				// Wait for lock to be released.
+				this.waitForAccountRelease(account, 1000);
+
+				if (!account.isLocked()) {
+					account.lock();
+					try {
+						this.repository.insert(transaction);
+						account.updateBalanceAmount(transaction.type, transaction.amount);
+					} catch (err) {
+						console.error(err);
+					} finally {
+						account.unlock();
+					}
+				}
 			} else {
 				throw new Error("Can't process transaction.");
 			}
-
-			// Release Lock.
 		}
-    }
+	}
+	
+	waitForAccountRelease(account, timeToWait) {
+		if (account.isLocked()) {
+			let newTimeToWait = timeToWait * 2;
+			if (newTimeToWait > 5000) {
+				newTimeToWait = 5000;
+			}
+
+			setTimeout(() => this.waitForAccountRelease(account, newTimeToWait), timeToWait);
+		}
+	}
 }
 
 module.exports = TransactionService;
